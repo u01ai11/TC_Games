@@ -9,7 +9,7 @@ Javascript files are the true colours games
 Output folder contains example processed CSV files 
 
 
-##Dependencies:
+## Dependencies:
 - Python: best to install Anaconda (https://www.continuum.io/downloads)
 - Numpy (python package): this comes packaged with Anaconda 
 
