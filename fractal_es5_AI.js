@@ -90,6 +90,7 @@ var FractalGame = function () {
         this.allResponses = [];
         this.timer = new Timer();
         this.timerStep = new Timer();
+        this.ratingTimer = new Timer(); 
         this.resourcesToLoad = 1;
         // Produce a list of phaseToComplete
         var rewardBefore = Math.random() > 0.5 ? ["rateFeeling1", "probability", "magnitude"] : ["rateFeeling1", "magnitude", "probability"];
@@ -215,11 +216,12 @@ var FractalGame = function () {
             if (this.phase === 'welcome') {
                 this.phase = this.phaseToComplete[0];
                 this.phaseToComplete.splice(0, 1);
+                this.ratingTimer.start()
             
             } else if (this.phase === 'rateFeeling1') {
 
                 // Add rating response
-                this.allResponses.push({ feelingRate1: this.feelingString });
+                this.allResponses.push({ feelingRate1: this.feelingString, day: thisConfig.day, time: this.ratingTimer.elapsed() });
                 
                 //Reset X axis 
                 this.feelingXaxis = 512;
@@ -238,9 +240,10 @@ var FractalGame = function () {
                     return;
                 }
 
-                this.randomize(this.selectedFrac); // shuffle the selected fractals
-                this.resetPos(); // reset selected fractals position
+
                 // Add response
+                // console.log(this.selectedFrac)
+
                 var chosen = [];
                 for (var _iterator2 = this.selectedFrac, _isArray2 = Array.isArray(_iterator2), _i2 = 0, _iterator2 = _isArray2 ? _iterator2 : _iterator2[Symbol.iterator]();;) {
                     var _ref2;
@@ -255,11 +258,14 @@ var FractalGame = function () {
                     }
 
                     var f = _ref2;
-
+                    console.log(f)
                     chosen.push({ Index: f.imgIdx, probability: f.probabilityConfig, magnitude: f.magnitudeConfig, guess: f.probability });
                 }
                 // Add response
                 this.allResponses.push({ elapsed: this.timer.elapsed(), rtime: 0, taskName: "FRAC", code: "guess - probability", chosen: chosen });
+
+                this.randomize(this.selectedFrac); // shuffle the selected fractals
+                this.resetPos(); // reset selected fractals position
 
                 // go to next phase
                 this.phase = this.phaseToComplete[0];
@@ -273,9 +279,8 @@ var FractalGame = function () {
                     return;
                 }
 
-                this.randomize(this.selectedFrac); // shuffle the selected fractals
-                this.resetPos(); // reset selected fractals position
                 // Add response
+                // console.log(this,selectedFrac)
                 var _chosen = [];
                 for (var _iterator3 = this.selectedFrac, _isArray3 = Array.isArray(_iterator3), _i3 = 0, _iterator3 = _isArray3 ? _iterator3 : _iterator3[Symbol.iterator]();;) {
                     var _ref3;
@@ -290,19 +295,24 @@ var FractalGame = function () {
                     }
 
                     var _f = _ref3;
+                    console.log(_f)
 
                     _chosen.push({ Index: _f.imgIdx, probability: _f.probabilityConfig, magnitude: _f.magnitudeConfig, guess: _f.magnitude });
                 }
                 // Add response
                 this.allResponses.push({ elapsed: this.timer.elapsed(), rtime: 0, taskName: "FRAC", code: "guess - magnitude", chosen: _chosen });
 
+                this.randomize(this.selectedFrac); // shuffle the selected fractals
+                this.resetPos(); // reset selected fractals position
+
                 // go to next phase
                 this.phase = this.phaseToComplete[0];
                 this.phaseToComplete.splice(0, 1);
+                this.ratingTimer.start()
             } else if (this.phase === 'rateFeeling') {
 
                 // Add rating response
-                this.allResponses.push({ feelingRate: this.feelingString });
+                this.allResponses.push({ feelingRate: this.feelingString, time: this.ratingTimer.elapsed() });
                 // Add Total response
                 this.allResponses.push({ totalWinnings: this.currentWinnings });
                 this.phase = "done";
