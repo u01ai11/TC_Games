@@ -91,7 +91,7 @@ var TARG = function () {
 
         // variable for each trial
         this.phase = 'welcome';
-        this.numOfTrials = 30; // total number of trials
+        this.numOfTrials = 60; // total number of trials
         this.numOfSuccess = 0; // total number of success
         this.trialIndex = 0; // current trial index
         this.trialType = null; // the trial type 'A', 'B1', 'C', 'D', 'E'
@@ -544,6 +544,7 @@ function runScript() {
                 // Important!!: pass config to thisConfig
                 thisConfig.targ_config = config;
                 var game = new TARG(thisConfig.targ_config, thisConfig.day);
+                console.log(thisConfig)
                 game.start();
             });
         };
@@ -646,19 +647,17 @@ function createTargConfig(done) {
     // E: 10 repeats within a day, but never again x 28 total
     // Hence: 280 + 10 + 10 + 20 + 28 = 348 configurations
 
-//EDIT
-//	Now need 30 trials per day
-//	3 different configurations
-	
+
+    //EDIT
+    // Now need 30 trials per day
+    // 3 different configurations
+   
     // A: novel (never repeats) x 10 per day = 280 total
     // C: once per day, every day x 10 difft configurations total
     // E: 10 repeats within a day, but never again x 28 total
     // Hence: 280 + 10 +  28 = 318 configurations
-	
-	
-    // Method:
-    // work in sets of 10 (counterbalancing the 10 target locations btw conditions A-D and within E)
-    // randomly choose locations for foils (anywhere but target location)
+   
+   
 
     // 4.18884231428571 is the max jitter in px (0.6 degrees in mm, 132 px/in)
 
@@ -667,9 +666,10 @@ function createTargConfig(done) {
 
     var dimX = 8;
     var dimY = 6;
-    var days = 28;
-    var trials = 30;
-    var configs = (10*days)+10+days;
+    var days = 21;
+    var trials = 60;
+    // var configs = (10*days)+10+10+20+days;
+    var configs = (20*days)+20+days;
     var batches = configs / 10;
     var locations_test = [];
     var configurations = [];
@@ -740,25 +740,25 @@ function createTargConfig(done) {
 
     // Split configurations into types keeping blocks of 10
 
-    var configs_A = configurations.slice(0, (10*days));
-    var configs_C = configurations.slice(290, 300);
-    var configs_E = configurations.slice((10*days)+40, (10*days)+40+days);
+    var configs_A = configurations.slice(0, (20*days));
+    var configs_C = configurations.slice(220, 240);
+    var configs_E = configurations.slice((20*days)+20, (20*days)+20+days);
 
-	// not sure what the 40 means??!
-	
     // create files for each day (random order)
-    var all_days_trails = []; // 28 days worth
+    var all_days_trails = []; // 21 days worth
 
     for (var day = 0; day < days; day++) {
         var day_trials = [];
         // dont allow two Es to appear consecutively
         // dont allow same Bs to appear consecutively
-        var a1 = fillArraySame(1, 10);
-        var a4 = fillArraySame(3, 10);
-        var a6 = fillArraySame(5, 10);
+        //a1 = A 
+
+        var a = fillArraySame(1, 20);
+        var c = fillArraySame(3, 20);
+        var e = fillArraySame(5, 20);
 
         var trial_sequence = [];
-        trial_sequence = trial_sequence.concat(a1, a4, a6);
+        trial_sequence = trial_sequence.concat(a, c, e);
 
         shuffle(trial_sequence);
 
@@ -780,7 +780,18 @@ function createTargConfig(done) {
         var A_sequence = fillArray(0, 1, 10, 1000);
         shuffle(A_sequence);
 
-      
+        var B1_sequence = fillArray(0, 1, 10, 1000);
+        var B2_sequence = fillArray(0, 1, 10, 1000);
+        stop = false;
+
+        while (!stop) {
+            // avoid two same B configs consecutively
+            shuffle(B1_sequence);
+            shuffle(B2_sequence);
+
+            var zeros = fillArraySame(0, trials);
+
+
 
             stop = true;
             for (var i = 0; i < trials - 1; i++) {
@@ -792,20 +803,12 @@ function createTargConfig(done) {
 
         var C_sequence = fillArray(0, 1, 10, 1000);
         shuffle(C_sequence);
-        var D_sequence = fillArray(0, 1, 10, 1000);
-        shuffle(D_sequence);
 
-        if (day % 2 == 1) {
-            // odd day D = D1
-            var D_configurations = configs_D1;
-        } else {
-            // even day D = D2
-            var D_configurations = configs_D2;
-        }
 
-        var countA = 0;
+
+        var countA = 0;;
         var countC = 0;
-        var countD = 0;
+        var countE = 0;
 
         for (var trial = 0; trial < trials; trial++) {
             // A-E trial types
@@ -813,16 +816,16 @@ function createTargConfig(done) {
                 // A
                 day_trials.push({ type: 'A', index: countA, stimuli: configs_A[A_sequence[countA] + day * A_sequence.length] });
                 countA++;
-            } else if (trial_sequence[trial] == 2.1) {
+
+            } else if (trial_sequence[trial] == 3) {
                 // C
                 day_trials.push({ type: 'C', index: countC, stimuli: configs_C[C_sequence[countC]] });
                 countC++;
-            } else if (trial_sequence[trial] == 4) {
-                // D
-                day_trials.push({ type: 'D', index: countD, stimuli: D_configurations[D_sequence[countD]] });
-                countD++;
             } else if (trial_sequence[trial] == 5) {
-               
+                // E
+                day_trials.push({ type: 'E', index: day, stimuli: configs_E[day] });
+                countE++;
+            }
         }
         all_days_trails.push(day_trials);
     }
@@ -833,5 +836,5 @@ function createTargConfig(done) {
     }, 1000);
 }
 
-	
-	
+
+    
