@@ -91,7 +91,7 @@ var TARG = function () {
 
         // variable for each trial
         this.phase = 'welcome';
-        this.numOfTrials = 60; // total number of trials
+        this.numOfTrials = 30; // total number of trials
         this.numOfSuccess = 0; // total number of success
         this.trialIndex = 0; // current trial index
         this.trialType = null; // the trial type 'A', 'B1', 'C', 'D', 'E'
@@ -646,7 +646,16 @@ function createTargConfig(done) {
     // E: 10 repeats within a day, but never again x 28 total
     // Hence: 280 + 10 + 10 + 20 + 28 = 348 configurations
 
-
+//EDIT
+//	Now need 30 trials per day
+//	3 different configurations
+	
+    // A: novel (never repeats) x 10 per day = 280 total
+    // C: once per day, every day x 10 difft configurations total
+    // E: 10 repeats within a day, but never again x 28 total
+    // Hence: 280 + 10 +  28 = 318 configurations
+	
+	
     // Method:
     // work in sets of 10 (counterbalancing the 10 target locations btw conditions A-D and within E)
     // randomly choose locations for foils (anywhere but target location)
@@ -659,8 +668,8 @@ function createTargConfig(done) {
     var dimX = 8;
     var dimY = 6;
     var days = 28;
-    var trials = 60;
-    var configs = (10*days)+10+10+20+days;
+    var trials = 30;
+    var configs = (10*days)+10+days;
     var batches = configs / 10;
     var locations_test = [];
     var configurations = [];
@@ -732,12 +741,11 @@ function createTargConfig(done) {
     // Split configurations into types keeping blocks of 10
 
     var configs_A = configurations.slice(0, (10*days));
-    var configs_B = configurations.slice(280, 290);
     var configs_C = configurations.slice(290, 300);
-    var configs_D1 = configurations.slice(300, 310);
-    var configs_D2 = configurations.slice(310, 320);
     var configs_E = configurations.slice((10*days)+40, (10*days)+40+days);
 
+	// not sure what the 40 means??!
+	
     // create files for each day (random order)
     var all_days_trails = []; // 28 days worth
 
@@ -746,14 +754,11 @@ function createTargConfig(done) {
         // dont allow two Es to appear consecutively
         // dont allow same Bs to appear consecutively
         var a1 = fillArraySame(1, 10);
-        var a2 = fillArraySame(2.1, 10);
-        var a3 = fillArraySame(2.2, 10);
         var a4 = fillArraySame(3, 10);
-        var a5 = fillArraySame(4, 10);
         var a6 = fillArraySame(5, 10);
 
         var trial_sequence = [];
-        trial_sequence = trial_sequence.concat(a1, a2, a3, a4, a5, a6);
+        trial_sequence = trial_sequence.concat(a1, a4, a6);
 
         shuffle(trial_sequence);
 
@@ -775,24 +780,7 @@ function createTargConfig(done) {
         var A_sequence = fillArray(0, 1, 10, 1000);
         shuffle(A_sequence);
 
-        var B1_sequence = fillArray(0, 1, 10, 1000);
-        var B2_sequence = fillArray(0, 1, 10, 1000);
-        stop = false;
-
-        while (!stop) {
-            // avoid two same B configs consecutively
-            shuffle(B1_sequence);
-            shuffle(B2_sequence);
-
-            var indices1 = indicesOfElement(trial_sequence, 2.1);
-            var indices2 = indicesOfElement(trial_sequence, 2.2);
-
-            var zeros = fillArraySame(0, trials);
-
-            for (var i = 0; i < indices.length; i++) {
-                zeros[indices1[i]] = B1_sequence[i];
-                zeros[indices2[i]] = B2_sequence[i];
-            }
+      
 
             stop = true;
             for (var i = 0; i < trials - 1; i++) {
@@ -816,8 +804,6 @@ function createTargConfig(done) {
         }
 
         var countA = 0;
-        var countB1 = 0;
-        var countB2 = 0;
         var countC = 0;
         var countD = 0;
 
@@ -828,14 +814,6 @@ function createTargConfig(done) {
                 day_trials.push({ type: 'A', index: countA, stimuli: configs_A[A_sequence[countA] + day * A_sequence.length] });
                 countA++;
             } else if (trial_sequence[trial] == 2.1) {
-                // B1
-                day_trials.push({ type: 'B1', index: countB1, stimuli: configs_B[B1_sequence[countB1]] });
-                countB1++;
-            } else if (trial_sequence[trial] == 2.2) {
-                // B2
-                day_trials.push({ type: 'B2', index: countB2, stimuli: configs_B[B2_sequence[countB2]] });
-                countB2++;
-            } else if (trial_sequence[trial] == 3) {
                 // C
                 day_trials.push({ type: 'C', index: countC, stimuli: configs_C[C_sequence[countC]] });
                 countC++;
@@ -844,9 +822,7 @@ function createTargConfig(done) {
                 day_trials.push({ type: 'D', index: countD, stimuli: D_configurations[D_sequence[countD]] });
                 countD++;
             } else if (trial_sequence[trial] == 5) {
-                // E
-                day_trials.push({ type: 'E', index: day, stimuli: configs_E[day] });
-            }
+               
         }
         all_days_trails.push(day_trials);
     }
