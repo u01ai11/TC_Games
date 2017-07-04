@@ -636,7 +636,7 @@ function createTargConfig(done) {
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.font = "22px Georgia";
-    ctx.fillText('Initializing config data at the first time...', canvas.width / 2, canvas.height / 2);
+    ctx.fillText('Initializing config data for the first time...', canvas.width / 2, canvas.height / 2);
 
     // need 60 trials per day x 28 days
     // 5 different configurations (10-20 per day of each):
@@ -760,20 +760,27 @@ function createTargConfig(done) {
         var trial_sequence = [];
         trial_sequence = trial_sequence.concat(a, c, e);
 
-        shuffle(trial_sequence);
-
         stop = false;
+        var countLoop = 0;
         while (!stop) {
-            // check Es are not consecutive
-            stop = true;
-            var indices = indicesOfElement(trial_sequence, 5);
-            for (var i = 0; i < indices.length - 1; i++) {
-                if (indices[i + 1] == indices[i] + 1) {
-                    trial_sequence = attemptToFixEs(trial_sequence, indices[i]);
-                    stop = false;
+            shuffle(trial_sequence);
+            while (!stop && countLoop < 999) {
+                // check Es are not consecutive
+                stop = true;
+                var indices = indicesOfElement(trial_sequence, 5);
+                for (var i = 0; i < indices.length - 1; i++) {
+                    if (indices[i + 1] == indices[i] + 1) {
+                        trial_sequence = attemptToFixEs(trial_sequence, indices[i]);
+                        stop = false;
+                        console.log('looped');
+                    }
                 }
+                countLoop++;
             }
+            console.log('outerLoop');
+            countLoop = 0;
         }
+        debugger;
 
         // trial_sequence has no consecutive E trials
         // randomize order within A, B, etc
