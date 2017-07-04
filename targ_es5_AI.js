@@ -753,34 +753,50 @@ function createTargConfig(done) {
         // dont allow same Bs to appear consecutively
         //a1 = A 
 
+        //three conditions produced
         var a = fillArraySame(1, 20);
         var c = fillArraySame(3, 20);
         var e = fillArraySame(5, 20);
 
         var trial_sequence = [];
+        //concatenate these 3 condition arrays
         trial_sequence = trial_sequence.concat(a, c, e);
 
+        //stop flag for while loop
         stop = false;
+        //counter for shile loop
         var countLoop = 0;
+        //while loop for reshuffle outer
         while (!stop) {
+            //shuffle the sequence (to randomise the order )
             shuffle(trial_sequence);
+            //while loop for loop counter, and attempt to make sure non consecutive E type trials are present 
+            //if we reach over 999 iterations, we default to the outer while loop, which resufles the array and starts again 
             while (!stop && countLoop < 999) {
                 // check Es are not consecutive
+                //set stop to true, so if FOR loop completes without it being reset, we will escape the while loop
                 stop = true;
+                //get the indices of every E condition (5). This returns an array with the locations of E in the trial_sequence arrays 
                 var indices = indicesOfElement(trial_sequence, 5);
+                //loop through all of the indexes 
                 for (var i = 0; i < indices.length - 1; i++) {
+                    //check if any of these indices are next to each other in trial_sequencew 
                     if (indices[i + 1] == indices[i] + 1) {
+                        //attempt to reshuffle as much as possible 
                         trial_sequence = attemptToFixEs(trial_sequence, indices[i]);
+                        //set stop to false, so we check if the attemp to fix has worked 
                         stop = false;
+                        //tell the console that a loop has completed 
                         console.log('looped');
                     }
                 }
+                //count the consecutive check loop
                 countLoop++;
             }
+            //tell the console an outerloop has completed 
             console.log('outerLoop');
             countLoop = 0;
         }
-        debugger;
 
         // trial_sequence has no consecutive E trials
         // randomize order within A, B, etc
