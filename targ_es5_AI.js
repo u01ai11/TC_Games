@@ -800,7 +800,7 @@ function createTargConfig(done) {
 
         // trial_sequence has no consecutive E trials
         // randomize order within A, B, etc
-        var A_sequence = fillArray(0, 1, 10, 1000);
+        var A_sequence = fillArray(0, 1, a.length, 1000);
         shuffle(A_sequence);
 
         var B1_sequence = fillArray(0, 1, 10, 1000);
@@ -824,7 +824,7 @@ function createTargConfig(done) {
             }
         }
 
-        var C_sequence = fillArray(0, 1, 10, 1000);
+        var C_sequence = fillArray(0, 1, c.length, 1000);
         shuffle(C_sequence);
 
 
