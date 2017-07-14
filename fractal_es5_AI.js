@@ -58,6 +58,17 @@ var Timer = function () {
     return Timer;
 }();
 
+//NOTE FROM ALEX IRVINE, 14/07/17. THERE APPEARS TO BE A MIX UP IN THE CONFIGURATION INFORMATION, THAT NEEDS CHECKING. 
+
+//INFORMATION IS TAKEN FROM THE USERS CONFIGURATION AND GLOBAL CONFIGURATION AND COMBINED 
+
+//E.g. in the choice of five stage, the probability and magnitude of each image is taken from the users own configuration information
+//But in the one of two stage, these values are taken from the global configuration: which leads the values associated with a given fractal change during the game
+//This is a thing that needs to be kept an eye on, to ensure we are not using global information instead of randomised per-participant information. 
+
+//the global configuration is called  'fracConfig', and'this.todayConfig' (this days global config), within the FractalGame function.
+// the individual's configuration is called userConfig, then is available in this.selectedFrac (in the magnitude/probabilityConfig values of 0-5)
+
 var FractalGame = function () {
 
     /*
@@ -96,6 +107,8 @@ var FractalGame = function () {
         var rewardBefore = Math.random() > 0.5 ? ["rateFeeling1", "probability", "magnitude"] : ["rateFeeling1", "magnitude", "probability"];
         var rewardAfter = Math.random() > 0.5 ? ["probability", "magnitude", "rateFeeling"] : ["magnitude", "probability", "rateFeeling"];
         this.phaseToComplete = rewardBefore.concat(["oneOfTwo", "oneOfFive"], rewardAfter); // Used in random order - probability or magnitude
+
+        console.log(this.phaseToComplete)
 
         this.sound = new Audio(pathPrefix + "/fractals/sounds/keyclick.mp3");
 
@@ -137,6 +150,8 @@ var FractalGame = function () {
             fractal.probabilityConfig = config[2];
             _this.selectedFrac.push(fractal);
         });
+
+        console.log(this.selectedFrac)
         // the continue button object
         this.continueBtn = {
             image: imgContinue,
@@ -459,7 +474,6 @@ var FractalGame = function () {
         /*
         * Draw the selected 5 fractals
         */
-
         for (var i = 0; i < 5; i++) {
             var fractal = this.selectedFrac[i];
             fractal.width = 105;fractal.height = 105;
@@ -527,21 +541,28 @@ var FractalGame = function () {
 
         // Clear everything
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        
+
         // Get the current question from today config
         var q = this.todayConfig[this.taskStep];
+        console.log(this.todayConfig)
+        console.log(this.taskStep)
+        console.log(q)
+
+
 
         // Left fractal
         var left = this.selectedFrac[q[0][0]];
-        left.magnitude = q[0][1];
-        left.probability = q[0][2];
+        left.magnitude = left.magnitudeConfig;
+        left.probability = left.probabilityConfig;
         left.x = 250;left.y = 250;
         left.height = 170;left.width = 170;
         this.ctx.drawImage(left.image, left.x, left.y, left.width, left.height);
 
         // Right fractal
         var right = this.selectedFrac[q[1][0]];
-        right.magnitude = q[1][1];
-        right.probability = q[1][2];
+        right.magnitude = right.magnitudeConfig;
+        right.probability = right.probabilityConfig;
         right.x = 600;right.y = 250;
         right.height = 170;right.width = 170;
         this.ctx.drawImage(right.image, right.x, right.y, right.width, right.height);
@@ -952,7 +973,8 @@ function runScript() {
 
 
     var game = new FractalGame(thisConfig.user_frac_config, global_frac_config, thisConfig.day);
-
+    console.log(game)
+    console.log(thisConfig.userConfig)
     imgContinue.onload = function () {
         game.start();
     };
