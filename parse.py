@@ -140,6 +140,8 @@ for part in partno:
 			TC_data['tcid-' + str(part)][sess]['data']['response'][0]
 		except KeyError:
 			valid_days.append(0)
+		except TypeError: 
+			valid_days.append(0)
 		else:
 			valid_days.append(1)
 
