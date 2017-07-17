@@ -10,7 +10,8 @@ import numpy
 
 
 #participant numbers
-partno = [10244]
+partno = [10250]
+
 
 
 #load TrueColours JSON all participants clump, this will be GROUPED BY PARTICIPANT from TrueColours 
@@ -166,7 +167,7 @@ for part in partno:
 							correct_wt.append(1)
 						else:
 							correct_wt.append(0)
-						trial_type_wt.append(tempdat[i]['configArray']['type'])
+						trial_type_wt.append(tempdat[i]['configArray']['type']+'_'+str(tempdat[i]['configArray']['index']))
 						session_wt.append(sess_wt)
 						date_wt.append(temp_date)
 
