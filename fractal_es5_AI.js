@@ -75,12 +75,12 @@ var genProbs = function(globalInput, confInput){
         }  
     }
     //now for the one of five task 
-    var oneOfFive_config = [[],[],[],[],[]];
+    var oneOfFive_config = [[], [], [], [], [], [], [], [], [], []];
     for (var i = 0; i <5; i++) {
         //this fractal 
         fractal = confInput[i]
         //pre sorting 
-        var temp_five = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; 
+        var temp_five = [0, 0, 0, 0, 0]; 
         //number of mags to keep
         var proportion = Math.round(temp_five.length*fractal.probabilityConfig)
         //loop until the size of proportion value 
@@ -90,8 +90,9 @@ var genProbs = function(globalInput, confInput){
         }
         //shuffle 
         temp_five = shuffle(temp_five);
-        //add to config 
-        oneOfFive_config[i] = temp_five
+        //add to config using imageIdx, so we can match this info even when shuffling of fractals occurs in game
+        oneOfFive_config[fractal.imgIdx] = temp_five
+
     }
 
     return [oneOfFive_config, oneOfTwo_config]
@@ -651,8 +652,7 @@ var FractalGame = function () {
 
         // Left fractal
         var left = this.selectedFrac[q[0][0]];
-        left.magnitude = left.magnitudeConfig;
-        left.reward_magnitude = q[0][1];
+        left.magnitude = this.oneOfTwo_config[this.taskStep][0][1];
         left.probability = left.probabilityConfig;
         left.x = 250;left.y = 250;
         left.height = 170;left.width = 170;
@@ -660,8 +660,7 @@ var FractalGame = function () {
 
         // Right fractal
         var right = this.selectedFrac[q[1][0]];
-        right.magnitude = right.magnitudeConfig;
-        right.reward_magnitude = q[1][1];
+        right.magnitude = this.oneOfTwo_config[this.taskStep][1][1];
         right.probability = right.probabilityConfig;
         right.x = 600;right.y = 250;
         right.height = 170;right.width = 170;
@@ -776,7 +775,7 @@ var FractalGame = function () {
                     break;
             }
             // Use magnitude and probability from config instead
-            fractal.magnitude = fractal.magnitudeConfig;
+            fractal.magnitude = this.oneOfFive_config[fractal.imgIdx][this.taskStep];
             fractal.probability = fractal.probabilityConfig;
 
             this.ctx.drawImage(fractal.image, fractal.x, fractal.y, fractal.width, fractal.height);
