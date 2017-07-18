@@ -14,18 +14,23 @@ var global_frac_config = [[[[1, 15, 0.7], [3, 20, 0.5]], [[0, 35, 0.3], [3, 0, 0
 //whilst keeping the order of trials the same (specified in the frac config), it ensures that the probability of magnitude reward matches up for the fractals 
 //It outputs two variables in an array [oneOfFive, oneOfTwo]: 
 // - oneOfFive_config: JSON with 5 cells, each cell containing values for magnitude over ten trials (either that fractals or 0)
-// - oneOfTwo_config: identical in structure to the globalInput, but with magnitude and probability replaced to match the individuals fractal configuration 
+// - oneOfTwo_config: identical in structure to the globalInput, but with magnitude and probability replaced to match the individual's fractal configuration 
 var genProbs = function(globalInput, confInput){
+
+	//globaInput = this.todayConfig
+	//confInput = this.selectedFrac
+
     //Generate vector of occurances for each fractal
     var frac_info = []
 
 
     // this is what we will manipulate to be correct for one of Two task
-    oneOfTwo_config = globalInput;
+    //oneOfTwo_config = globalInput;
+    var oneOfTwo_config = [[[[],[],[]], [[],[],[]]], [[[],[],[]], [[],[],[]]], [[[],[],[]], [[],[],[]]], [[[],[],[]], [[],[],[]]], [[[],[],[]], [[],[],[]]], [[[],[],[]], [[],[],[]]], [[[],[],[]], [[],[],[]]], [[[],[],[]], [[],[],[]]], [[[],[],[]], [[],[],[]]], [[[],[],[]], [[],[],[]]]]
     //this is for one of two task 
     for (var i = 0; i < 5; i++) {
         //info for this fractal
-        var fractal = confInput[i]
+        var fractal_1 = confInput[i]
         //blank temp variables 
         var temp_arr = []
         var temp_trial_ind = []
@@ -47,7 +52,7 @@ var genProbs = function(globalInput, confInput){
             }
         }
         //get the probability for this fractal 
-        var temp_prob = fractal.probabilityConfig;
+        var temp_prob = fractal_1.probabilityConfig;
         //what number of the occurances should be 1s? 
         var proportion = Math.round(temp_arr.length*temp_prob)
         //loop through and replace with 1s 
@@ -66,9 +71,9 @@ var genProbs = function(globalInput, confInput){
                 //probability from config
                 oneOfTwo_config[tr][fr][2] = temp_prob;
                 //else if we are using actual magnitude, replace this with new magnitude value from config 
-            } else if (temp_arr[m] == 1){
+            } else if (temp_arr[m] == 1) {
                 //magnitude from config 
-                oneOfTwo_config[tr][fr][1] = fractal.magnitudeConfig;
+                oneOfTwo_config[tr][fr][1] = confInput[i].magnitudeConfig;
                 //probability from config
                 oneOfTwo_config[tr][fr][2] = temp_prob;
             }
@@ -94,7 +99,10 @@ var genProbs = function(globalInput, confInput){
         oneOfFive_config[fractal.imgIdx] = temp_five
 
     }
-
+    console.log('global:')
+    console.log(globalInput)
+    console.log('oneOfTwo:')
+    console.log(oneOfTwo_config)
     return [oneOfFive_config, oneOfTwo_config]
 }
 
@@ -244,7 +252,7 @@ var FractalGame = function () {
         console.log(this.selectedFrac)
 
         //using function, generate the correct probability adjusted information for this day 
-        beforeSplit = genProbs(this.todayConfig, this.selectedFrac)
+        var beforeSplit = genProbs(this.todayConfig, this.selectedFrac)
         this.oneOfFive_config = beforeSplit[0]
         this.oneOfTwo_config = beforeSplit[1]
 
