@@ -51,6 +51,7 @@ var genProbs = function(globalInput, confInput){
                 }
             }
         }
+
         //get the probability for this fractal 
         var temp_prob = fractal_1.probabilityConfig;
         //what number of the occurances should be 1s? 
@@ -62,16 +63,21 @@ var genProbs = function(globalInput, confInput){
 
         for (var m = 0; m < temp_arr.length; m++){
             //get stored indices for this instance 
-            tr = temp_trial_ind[m]
-            fr = temp_frac_ind[m]
+            var tr = temp_trial_ind[m]
+            var fr = temp_frac_ind[m]
             //if this item is 0 (i.e. not supposed to show magnitude), replace magnitude with 0 using indices 
             if (temp_arr[m] == 0) {
+
+                //replace index it with image ID 
+                oneOfTwo_config[tr][fr][0] = confInput[i].imgIdx
                 //magnitude is 0 
                 oneOfTwo_config[tr][fr][1] = 0;
                 //probability from config
                 oneOfTwo_config[tr][fr][2] = temp_prob;
                 //else if we are using actual magnitude, replace this with new magnitude value from config 
             } else if (temp_arr[m] == 1) {
+                //replace index it with image ID 
+                oneOfTwo_config[tr][fr][0] = confInput[i].imgIdx
                 //magnitude from config 
                 oneOfTwo_config[tr][fr][1] = confInput[i].magnitudeConfig;
                 //probability from config
@@ -79,6 +85,7 @@ var genProbs = function(globalInput, confInput){
             }
         }  
     }
+
     //now for the one of five task 
     var oneOfFive_config = [[], [], [], [], [], [], [], [], [], []];
     for (var i = 0; i <5; i++) {
@@ -256,8 +263,13 @@ var FractalGame = function () {
         this.oneOfFive_config = beforeSplit[0]
         this.oneOfTwo_config = beforeSplit[1]
 
+        //make a copy of this so later randomisations don't mess up finding config information in oneOfTwo 
+        this.fracForTwo = Object.assign({},this.selectedFrac); 
+        
         console.log(this.oneOfTwo_config)
         console.log(this.oneOfFive_config)
+        console.log('fracForTwo')
+        console.log(this.fracForTwo)
 
         // the continue button object
         this.continueBtn = {
@@ -656,10 +668,12 @@ var FractalGame = function () {
         console.log(this.taskStep)
         console.log(q)
 
+        console.log('fracForTwo')
+        console.log(this.fracForTwo)
 
 
         // Left fractal
-        var left = this.selectedFrac[q[0][0]];
+        var left = this.fracForTwo[q[0][0]];
         left.magnitude = this.oneOfTwo_config[this.taskStep][0][1];
         left.probability = left.probabilityConfig;
         left.x = 250;left.y = 250;
@@ -667,7 +681,7 @@ var FractalGame = function () {
         this.ctx.drawImage(left.image, left.x, left.y, left.width, left.height);
 
         // Right fractal
-        var right = this.selectedFrac[q[1][0]];
+        var right = this.fracForTwo[q[1][0]];
         right.magnitude = this.oneOfTwo_config[this.taskStep][1][1];
         right.probability = right.probabilityConfig;
         right.x = 600;right.y = 250;
