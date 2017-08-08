@@ -100,7 +100,8 @@ var GambGame = function () {
         this.totalNumOfTrails = 20;
         this.curSelectedWheel = 'none'; // 'left' or 'right'
         this.startPoints = [];
-        this.spinTimeTotal = 2500;
+        //select a random spin duration
+        this.spinTimeTotal = 1000 + 2500*Math.random();
         this.spinAngle = 30; // 30 degree for each time
         this.spinnedTime = 0;
         this.spinnedRads = 0; // The spinned radian
@@ -330,7 +331,9 @@ var GambGame = function () {
         } else {
             // Indicate a short pause period
             this.phase = 'pause';
-
+            //select a new random spin duration
+       		this.spinTimeTotal = 1000 + 2500*Math.random();
+       		console.log(this.spinTimeTotal)
             // Get the selected wheel data and start point
             var selectedWheelData = this.curTrialData[this.curSelectedWheel];
             var startPoint = this.startPoints[this.curSelectedWheel];
